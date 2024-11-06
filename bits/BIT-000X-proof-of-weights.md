@@ -116,9 +116,9 @@ Benchmarks taken from an Apple M1 machine with 10 CPUs and 32GB of RAM, comparin
 
 | Proof System | Circuit   | Batch Size | Proof Size | Public Signals Size | Verification Time (per proof) |
 | ------------ | --------- | ---------- | ---------- | ------------------- | ----------------------------- |
-| EZKL         | Subnet 2  | 1024       | 90kb       | 1024                | 0.7s                          |
-| EZKL         | Subnet 27 | 1024       | 147kb      | 1024                | 0.1s                          |
-| EZKL         | Subnet 48 | 1024       | 77kb       | 1024                | 0.6s                          |
+| EZKL         | Subnet 2  | 1024       | 21.57kb    | 68kb                | 0.7s                          |
+| EZKL         | Subnet 27 | 1024       | 10.56kb    | 137kb               | 0.1s                          |
+| EZKL         | Subnet 48 | 1024       | 8.32kb     | 68kb                | 0.6s                          |
 | Circom       | Subnet 2  | 1024       | ~616 bytes | 166kb               | 0.38s                         |
 | Circom       | Subnet 48 | 1024       | ~616 bytes | 65kb                | 0.31s                         |
 
@@ -190,7 +190,7 @@ Proof of Weights used in conjunction with the following commit-reveal related st
 
 #### Peer Prediction
 
-This strategy was first introduced in the first BT weight copier paper and proposes the integration of peer prediction to determine how likely weights are to have been generated authentically based on a non-deterministic case of scoring. This strategy has the potential to integrate into proof of weights through comparison of circuit inputs.
+This strategy, first introduced in the [BT Weight Copier Paper], leverages peer prediction mechanisms to assess the authenticity of weight generation. By analyzing correlations between validator inputs and comparing them against expected statistical patterns, the system can identify likely cases of weight copying. When integrated with Proof of Weights, the circuit inputs themselves become valuable signals for peer prediction analysis, enabling robust detection of copied versus independently generated weights.(\*)
 
 #### Range Proofs
 
@@ -198,7 +198,7 @@ Through the use of ZKRPs, validators can prove that their weights fall within a 
 
 #### Rank Proofs
 
-Similar to the range proof approach, proofs could output the rank order of each miner rather than their actual weight vector, again this would provide sufficient information to the miner in terms of how they fare in terms of position in the incentive curve without exposing critical weight vectors.
+Similar to range proofs, rank proofs output each miner's ordinal position rather than their weight vector. This provides miners with their relative performance ranking while concealing the actual weight values that could enable weight copying. Validators prove they have correctly ranked miners according to their incentive mechanism without revealing the underlying weights used to determine those rankings.
 
 #### Partial revelation
 
@@ -212,7 +212,9 @@ A high level overview of the above strategies is presented in the below flowchar
 
 This document is licensed under The Unlicense.
 
-- Public signals increase to a dynamic size in the case that input signals are used in a peer prediction style approach to weight copying. To reduce the amount of load on the chain to a smaller, fixed size and for the purposes of this BIT, output signals (weights and validator UID) are sufficient.
+---
+
+(\*) Public signals increase to a dynamic size in the case that input signals are used in a peer prediction style approach to weight copying. To reduce the amount of load on the chain to a smaller, fixed size and for the purposes of this BIT, output signals (weights and validator UID) are sufficient.
 
 [BT Weight Copier Paper]: https://docs.bittensor.com/papers/BT_Weight_Copier-29May2024.pdf
 [EZKL]: https://github.com/zkonduit/ezkl
