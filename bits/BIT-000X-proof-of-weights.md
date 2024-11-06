@@ -138,7 +138,7 @@ Jolt is a novel proof system developed by a16z, which provides a fully featured 
 - Proof sizes vary depending on circuit complexity, in the range of 50kb-1mb
 - Trusted setup files (KZG commitments) must be present on each subtensor node for the purposes of proof verification. In total, 16GB of persistent storage is required for the KZG files.
 
-> Note that each circuit must be contrained in terms of maximum complexity to prevent the circuit from becoming too large to be practical for the network.
+> Note that each circuit must be constrained in terms of maximum complexity to prevent the circuit from becoming too large to be practical for the network.
 
 #### Scaling Considerations
 
@@ -205,6 +205,10 @@ Similar to the range proof approach, proofs could output the rank order of each 
 #### Partial revelation
 
 In this strategy, subtensor nodes select a random subset of validators based on a stake threshold percentage, compelling a subset of validators to expose their weight vectors immediately. Miners will receive partial feedback instantaneously, allowing them to gauge their incentive without full visibility. During revelation, the remaining validators are compelled to reveal their previously proven weights and consensus is then calculated for the previous tempo. Weight copiers aren’t provided enough information to calculate consensus values, though miners are provided with a reasonably high degree of visibility into their incentive instantly.
+
+A high level overview of the above strategies is presented in the below flowchart.
+
+![Proof of Weights Strategies](https://github.com/user-attachments/assets/2fffc374-6b18-4d1d-84ea-d3dee80cddff)
 
 ## Copyright
 
