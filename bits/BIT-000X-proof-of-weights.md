@@ -52,7 +52,7 @@ Two new hyperparameters are required, each can be configured by the subnet owner
 
 - `weights_verification_key`
 
-  This hyperparameter stores the cryptographic verification key unique to the incentive mechanism created by the owner of the subnet. Blockchain validators will use the value of this hyperparameter during proof verification, to attest validator supplied proofs against.
+  This hyperparameter stores the cryptographic verification key unique to the incentive mechanism created by the owner of the subnet. Blockchain validators will use the value of this hyperparameter during proof verification, to attest validator supplied proofs.
 
 - `valid_proof_value`
 
