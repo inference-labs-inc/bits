@@ -157,8 +157,6 @@ Based on the average proof sizes and verification times from the benchmarks abov
 To support validator submission of weights accompanied by cryptographic proofs, a new version of Bittensor will be released. Subnet owners that choose to enable this hyperparameter will require all validators participating in that subnet to upgrade to this new version in order to successfully commit proofs and public signals alongside their weights.
 
 Similarly to how commit-reveal is implemented as an optional feature to be enabled at the discretion of a subnet owner, Proof of Weights is also optional. Subnet owners who choose not to enable Proof of Weights will not have any impact on the operation of their subnet, miners, or validators. Proof of Weights can be enabled or disabled at any time without impact to the subnets operations (minus the typical inconvenience of deploying a subnet software update across miners/validators).
-Reference Implementation (Optional)
-If applicable, include a link to a reference implementation that demonstrates the feasibility of the proposal. This implementation may be partial or fully complete.
 
 ## Reference Implementation
 
@@ -208,7 +206,7 @@ In this strategy, subtensor nodes select a random subset of validators based on 
 
 A high level overview of the above strategies is presented in the below flowchart.
 
-![Proof of Weights Strategies](https://github.com/user-attachments/assets/2fffc374-6b18-4d1d-84ea-d3dee80cddff)
+![Proof of Weights Strategies](https://github.com/user-attachments/assets/b954a40e-0a5c-4542-ba4b-9f402760c340)
 
 ## Copyright
 
