@@ -44,6 +44,12 @@ High level, the process for conversion of the incentive mechanism into a zero kn
 
 After this process, the subnet owner will provide the exported Halo2 verification key to the chain as discussed in the hyperparameters section.
 
+# <<<<<<< Updated upstream
+
+For reference, examples of the above process are provided in the [Proof of Weights simulation repository].
+
+> > > > > > > Stashed changes
+
 ### Hyperparameters
 
 Two new hyperparameters are required, each can be configured by the subnet owner.
@@ -217,3 +223,4 @@ This document is licensed under The Unlicense.
 [ONNX]: https://onnx.ai/
 [Yuma Consensus]: https://docs.bittensor.com/yuma-consensus
 [ImmuneFi]: https://immunefi.com/
+[Proof of Weights simulation repository]: https://github.com/inference-labs-inc/pow-simulations
