@@ -1,4 +1,4 @@
-# BIT-000X: Proof of Weights (Working Paper)
+# BIT-000X: Proof of Weights
 
 - **BIT Number:** TBD
 - **Title:** Proof of Weights
