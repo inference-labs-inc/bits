@@ -44,11 +44,7 @@ High level, the process for conversion of the incentive mechanism into a zero kn
 
 After this process, the subnet owner will provide the exported Halo2 verification key to the chain as discussed in the hyperparameters section.
 
-# <<<<<<< Updated upstream
-
 For reference, examples of the above process are provided in the [Proof of Weights simulation repository].
-
-> > > > > > > Stashed changes
 
 ### Hyperparameters
 
