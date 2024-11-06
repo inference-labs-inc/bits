@@ -86,7 +86,7 @@ Changes to Yuma Consensus must be made to implement a penalty for validators tha
 W_clipped *= (Vp + (1 - Vp) * (1 - hyperparameter(valid_proof_value)))
 ```
 
-![Flowchart of Proof of Weights](https://github.com/user-attachments/assets/e723c56e-a4c7-49f2-9ce5-9f272bd54310)
+![Flowchart of Proof of Weights](https://github.com/user-attachments/assets/82438fa9-8c93-45cc-99fa-ad4b7e7678bd)
 
 <details>
 <summary>Simulation of Proof of Weights in Action</summary>
