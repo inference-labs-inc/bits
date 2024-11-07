@@ -183,9 +183,13 @@ Additionally, a fork of the developer documentation repository has been created 
 
 Though this proposal primarily exists to increase the level of security throughout the network, there are important considerations regarding the security of this update itself.
 
-Note that an additional concern would normally be the ability of validators to copy eachother’s proofs from extrinsics submitted to the chain, however this is made impossible through the use of the validator’s UID as one of the input signals. The blockchain will check the UID included in the proof against the submitting key to verify a match and mitigate this risk.
-
 An additional layer of security is provided by the recently executed Master Services Agreement with [ImmuneFi], which establishes a $100,000 bug bounty program aimed at incentivizing white-hat hackers to identify and report vulnerabilities within the [Omron] codebase. By proactively identifying potential flaws through external audits and community-driven bounty programs, the subnet will ensure continuous security vigilance.
+
+In the event that Inference Labs ceases to exist or Subnet 2 is deregistered, the work conducted remains secure as all development and contributions are open source. The Proof of Weights protocol is structured to operate independently of a subnet, ensuring that its core functionalities persist. The open-source nature of the project enables the broader community to scaffold and maintain decentralized infrastructure to execute all computations.
+
+Additionally, the incentive structure built into the subnet model encourages continuous development, fostering innovation in proof generation times and sizes, thereby mitigating chain bloat and promoting scalability as the number of subnets increases.
+
+Another potential concern is validators copying each other's proofs from extrinsics submitted to the chain. This risk is mitigated by incorporating the validator's UID as an input signal. The blockchain verifies the UID in the proof against the submitting key to ensure a match, preventing such copying.
 
 A significant concern related to the issue of weight copying exists in a situation where a dishonest validator employs artificially generated input data designed to mimic real-world data, in an effort to supply cryptographic proof that they operated within the subnet and effectively weight copy by generating valid proofs based on false pretenses. As described, this situation could present a challenge in that validators could observe resulting weight vectors across submissions and pre-emptively calculate consensus weights, using these calculations to craft input data designed to provide proven “perfect” consensus weights.
 
@@ -203,7 +207,7 @@ This strategy, first introduced in the [BT Weight Copier Paper], leverages peer 
 
 Through the use of ZKRPs, validators prove that miners fall within specific percentile ranges on the incentive curve. For example, with a bucket size of 5, validators prove and immediately reveal that miners belong to ranges like [1,5], [6,10], etc., while committing to their exact weights for later revelation. This provides miners with actionable real-time feedback about their relative performance without exposing enough granular information for effective weight copying. Subnet owners can configure bucket sizes to balance miner feedback against copying resistance.
 
-<details>
+<details open>
 <summary>View Analysis and Simulation</summary>
 
 The range proofs approach builds upon the ranking-based solution by introducing bucketed ranges rather than exact rankings. While ranking-based solutions provide miners with precise ordinal positions but risk enabling weight copying, range proofs strike a balance by revealing only approximate ranking ranges (e.g. [1-5], [6-10], etc).
@@ -235,7 +239,7 @@ The simulations demonstrate that range proofs can effectively balance the compet
 
 Rank proofs extend range proofs by allowing validators to cryptographically prove and immediately reveal precise ordinal rankings while concealing actual weight values until later. This provides miners with exact performance standings in real-time, while making weight copying difficult since actual consensus values remain hidden during the concealment period. The system preserves the security benefits of commit-reveal while giving miners the continuous feedback needed to maintain competitive performance and avoid deregistration.
 
-<details>
+<details open>
 <summary>View Analysis and Simulation</summary>
 
 The rank proofs approach provides miners with precise ordinal positions while still concealing actual weight values during the concealment period. Through simulation analysis across multiple subnets and strategies, we observe that rank proofs can effectively balance miner transparency with copy resistance. Key findings include:
