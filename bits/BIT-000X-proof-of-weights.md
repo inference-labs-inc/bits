@@ -74,8 +74,7 @@ set_weights_with_proof(self,
     netuid: int,
     uids: Union[NDArray[np.int64], "torch.LongTensor", list],
     weights: Union[NDArray[np.float32], "torch.FloatTensor", list],
-    proof: bytes,
-    signals: list[Any],
+    proof_cid: str,
     wait_for_inclusion: bool = False,
     wait_for_finalization: bool = False,
     prompt: bool = False,
@@ -115,7 +114,7 @@ With Proof of Weights, validators are required to prove that they've done the co
 
 The [Circom] proof system using [groth16] proofs was considered as an alternative to [EZKL]’s Halo2 implementation for several reasons listed below, however the barrier to developer adoption is significant considering it uses a DSL ([circom]) to define constraints. Migration to this proof system is recommended in the future as tooling surrounding the proof system improves, lowering the barrier to entry for developers.
 
-- Proof sizes remain a fixed size of approximately 800 bytes
+- Proof sizes remain a fixed size of approximately 616 bytes
 - Proving times have shown significant improvements within the [Omron] subnet, with 1024 scoring changes proven in under 1.5s for Subnet 2.
 
 Benchmarks taken from an Apple M1 machine with 10 CPUs and 32GB of RAM, comparing the performance of [EZKL] and [Circom] for several Proof of Weights circuits are show below.
@@ -141,23 +140,58 @@ Jolt is a novel proof system developed by a16z, which provides a fully featured 
 #### Performance Metrics
 
 - Proof verification times vary but are generally under 1s per proof
-- Proof sizes vary depending on circuit complexity, in the range of 50kb-1mb
+- Proof sizes vary depending on circuit complexity, in the range of 5kb-50kb
 - Trusted setup files (KZG commitments) must be present on each subtensor node for the purposes of proof verification. In total, 16GB of persistent storage is required for the KZG files.
 - Proving times, memory and CPU consumption are all subject to the dynamic complexity of each circuit defined. Decentralized proving clusters such as [Omron] can abstract the work of proving away from validators entirely as demonstrated in the [Proof of Weights SDK].
+- Assuming full feature uptake and 64 subnets, the total number of proofs required per day is estimated at 25,600. To meet this demand, the following chart depicts the proving capacity of the [Omron] subnet against the number of proofs required per day.
+
+![Proving demand vs capacity](https://github.com/user-attachments/assets/b1faafc6-85b6-4d73-a903-7ee1e4481f8c)
 
 > Note that each circuit must be constrained in terms of maximum complexity to prevent the circuit from becoming too large to be practical for the network.
 
 #### Scaling Considerations
 
-Based on the average proof sizes and verification times from the benchmarks above, scaled load is estimated as follows assuming 100% feature uptake.
+Based on the average verification times from the benchmarks above, scaled load is estimated as follows assuming 100% feature uptake.
 
-| Scenario             | Validators | Subnets | Total Verification Time per Tempo | Total Proof Size per Tempo |
-| -------------------- | ---------- | ------- | --------------------------------- | -------------------------- |
-| Current              | 20/subnet  | 64      | 597s                              | 134mb                      |
-| Current with groth16 | 20/subnet  | 64      | 384s                              | 788kb                      |
-| Future\*             | 10/subnet  | 64      | 298s                              | 67mb                       |
+| Scenario             | Validators | Subnets | Total Verification Time per Tempo |
+| -------------------- | ---------- | ------- | --------------------------------- |
+| Current              | 20/subnet  | 64      | 597s                              |
+| Current with groth16 | 20/subnet  | 64      | 384s                              |
+| Future\*             | 10/subnet  | 64      | 298.5s                            |
+| Future with groth16  | 10/subnet  | 64      | 192s                              |
 
 (\*) As Bittensor progresses through the dTAO upgrade, validator consolidation is anticipated and the number of active validators on each subnet will decrease. Yuma consensus is less effective as the marginal validator is removed, and what happens when a single validator remains? Who will ensure they are honest and will treat all miners fairly? Proof of Weights is designed such that a single validator can prove they are honest and fair.
+
+### Mitigating Chain Bloat
+
+To mitigate chain bloat from proof sizes shown in the benchmarks, proofs will be stored off-chain using IPFS. Validators will only submit a 64-byte hash of the IPFS Content Identifier (CID) to the chain during commit, while storing the full proof data on IPFS. This approach minimizes on-chain storage requirements while maintaining proof verifiability through the immutable CID hash.
+
+To complete an IPFS integration, the following steps are required.
+
+1. **Validator Node Requirements:**
+
+   - Each validator must either run an IPFS node or have access to an IPFS gateway (such as Pinata or Infura)
+   - The validator software must include IPFS client capabilities for proof submission
+
+2. **Proof Submission Process:**
+
+   - The validator first pins the proof data to IPFS
+   - Waits for confirmation of successful pinning
+   - Retrieves the CID and submits only the CID hash to the chain
+   - The proof data must remain pinned for a minimum duration to allow for verification
+
+3. **Verification Process:**
+   - Blockchain validators retrieve the proof data using the submitted CID
+   - If the proof data cannot be retrieved, the weight submission is considered invalid
+   - A timeout period is enforced for proof retrieval attempts
+
+The efficacy of this approach is demonstrated in the below proof and public signal projections for a 30-day period.
+
+![Proof and Public Signal Projections](https://github.com/user-attachments/assets/67d2dda7-9c8b-41ff-a677-587130a68020)
+
+The process for proof submission using the IPFS off-chain storage mechanism is outlined as follows.
+
+![Proof Submission Flowchart with IPFS](https://github.com/user-attachments/assets/2da11547-a59e-4f17-9222-db47e73b2e9c)
 
 ## Backwards Compatibility
 
