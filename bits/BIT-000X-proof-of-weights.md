@@ -94,7 +94,7 @@ W_clipped *= (Vp + (1 - Vp) * (1 - hyperparameter(valid_proof_value)))
 
 ![Flowchart of Proof of Weights](https://github.com/user-attachments/assets/82438fa9-8c93-45cc-99fa-ad4b7e7678bd)
 
-<details>
+<details open>
 <summary>Simulation of Proof of Weights in Action</summary>
 
 ![PoW Simulation](https://github.com/user-attachments/assets/e6ef0e53-9d96-43ce-9cdf-df77f82be0ad)
