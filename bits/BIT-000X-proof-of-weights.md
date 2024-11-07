@@ -28,7 +28,13 @@ Proof of Weights is a necessary addition to the Bittensor network because it all
 
 ## Specification
 
-Proof of Weights exclusively covers subnet incentive mechanisms. Where a subnet incentive mechanism is defined as follows.
+**Proof of Weights** exclusively covers subnet **incentive mechanism**s.
+
+Where **Proof of Weights** is defined as follows.
+
+> A cryptographic verification system in Bittensor that requires validators to provide zero-knowledge proofs demonstrating they correctly executed a subnet's incentive mechanism when assigning weights to miners.
+
+Where **incentive mechanism** is defined as follows.
 
 > A mechanism which converts input vectors which represent qualitative signals about a miner’s work into succinct weight vectors which represent the outcoming score of that miner on a normal distribution.
 
@@ -97,7 +103,7 @@ W_clipped *= (Vp + (1 - Vp) * (1 - hyperparameter(valid_proof_value)))
 
 ## Rationale
 
-In response to the weight copying problem, Bittensor has recently released Commit Reveal to combat this behavior by which in specific conditions the network would reduce the rewards of the copying actors. If enabled, Commit Reveal addresses this problem by enforcing all subnet validators to commit a hash of their responses on chain. Validators would then reveal these responses after the expiry of an interval that has been set as a parameter by the subnet owner.
+In response to the practise of weight copying, Bittensor has released Commit Reveal (and subsequently Commit Reveal 2.0) to combat this behavior. Commit reveal is designed to reduce emissions of copying validators in specific conditions. If enabled, Commit Reveal addresses this problem by enforcing all subnet validators to commit a hash of their responses on chain. Validators would then reveal these responses after the expiry of an interval that has been set as a parameter by the subnet owner, effectively delaying the feedback loop for miners and propective weight copiers alike.
 
 While Commit Reveal effectively addresses weight copying, its time interval introduces significant latency that delays critical feedback to miners. This latency conflicts with Bittensor's core goal of rapidly incentivizing state-of-the-art development. The delayed feedback loop not only slows network innovation but also frustrates miners by reducing real-time performance visibility. Additionally, this delay enables a new attack vector where dishonest validators can attempt to predict weights before they are revealed, potentially circumventing the intended protections.
 
@@ -137,12 +143,13 @@ Jolt is a novel proof system developed by a16z, which provides a fully featured 
 - Proof verification times vary but are generally under 1s per proof
 - Proof sizes vary depending on circuit complexity, in the range of 50kb-1mb
 - Trusted setup files (KZG commitments) must be present on each subtensor node for the purposes of proof verification. In total, 16GB of persistent storage is required for the KZG files.
+- Proving times, memory and CPU consumption are all subject to the dynamic complexity of each circuit defined. Decentralized proving clusters such as [Omron] can abstract the work of proving away from validators entirely as demonstrated in the [Proof of Weights SDK].
 
 > Note that each circuit must be constrained in terms of maximum complexity to prevent the circuit from becoming too large to be practical for the network.
 
 #### Scaling Considerations
 
-Based on the average proof sizes and verification times from the benchmarks above, scaled load is estimated as follows.
+Based on the average proof sizes and verification times from the benchmarks above, scaled load is estimated as follows assuming 100% feature uptake.
 
 | Scenario             | Validators | Subnets | Total Verification Time per Tempo | Total Proof Size per Tempo |
 | -------------------- | ---------- | ------- | --------------------------------- | -------------------------- |
@@ -160,7 +167,7 @@ Similarly to how commit-reveal is implemented as an optional feature to be enabl
 
 ## Reference Implementation
 
-[Omron] has served as a testing ground for proof of weights for the past four months, and through it many iterations have been implemented, tested and improved. Today, the subnet provides three proof of weights circuits for subnets 2, 27 and 48, with many more on the way. Please find attached reference implementations of each.
+[Omron] has served as a testing ground for proof of weights since June 2024. Through extensive testing and iteration, the subnet has developed robust proof of weights circuits for subnets 2, 27 and 48, with additional circuits in active development. The reference implementations below demonstrate production-ready circuits that have been battle-tested in a live environment.
 
 | Subnet    | Circuit Link                                                                                                                                                                                     |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -194,11 +201,67 @@ This strategy, first introduced in the [BT Weight Copier Paper], leverages peer 
 
 #### Range Proofs
 
-Through the use of ZKRPs, validators can prove that their weights fall within a specific range on the incentive curve. For example, the proof can contain buckets of UIDs for percentile ranges on the incentive curve. This allows miners to receive instantaneous feedback without allowing copiers full knowledge of weight vectors, only that each miner is between two points on the incentive curve.
+Through the use of ZKRPs, validators prove that miners fall within specific percentile ranges on the incentive curve. For example, with a bucket size of 5, validators prove and immediately reveal that miners belong to ranges like [1,5], [6,10], etc., while committing to their exact weights for later revelation. This provides miners with actionable real-time feedback about their relative performance without exposing enough granular information for effective weight copying. Subnet owners can configure bucket sizes to balance miner feedback against copying resistance.
+
+<details>
+<summary>View Analysis and Simulation</summary>
+
+The range proofs approach builds upon the ranking-based solution by introducing bucketed ranges rather than exact rankings. While ranking-based solutions provide miners with precise ordinal positions but risk enabling weight copying, range proofs strike a balance by revealing only approximate ranking ranges (e.g. [1-5], [6-10], etc).
+
+Through simulation analysis across multiple subnets and strategies, we observe that range proofs with appropriately sized buckets can significantly reduce a weight copier's ability to exploit the system while still providing miners with actionable feedback about their relative performance. Key findings include:
+
+1. Larger bucket sizes (e.g. ranges of 10 vs 5) correlate with reduced weight copier effectiveness, as the granularity of ranking information decreases
+2. Even sophisticated copying strategies like relative historical ranking struggle to achieve meaningful gains when bucket sizes are optimized
+3. Miners retain sufficient visibility into their approximate network standing to make informed decisions and avoid deregistration
+4. The approach maintains the security benefits of commit-reveal while addressing the critical need for real-time performance feedback
+
+The simulations demonstrate that range proofs can effectively balance the competing priorities of miner transparency and copy resistance. By tuning bucket sizes, subnet owners can customize the tradeoff between security and usability based on their specific needs.
+
+#### Subnet 2, Conceal Period of 13 intervals
+
+![SN2 Conceal 13 Range Proofs](https://github.com/user-attachments/assets/b27bd010-5b41-41e0-a84b-88e550b1207a)
+
+#### Subnet 19, Conceal Period of 13 intervals
+
+![SN19 Conceal 13 Range Proofs](https://github.com/user-attachments/assets/2269114b-a2c3-4188-bc61-dd5a284ac960)
+
+#### Subnet 27, Conceal Period of 13 intervals
+
+![SN27 Conceal 13 Range Proofs](https://github.com/user-attachments/assets/bd293087-6caf-4850-9696-6e21bf4a2c3c)
+
+</details>
 
 #### Rank Proofs
 
-Similar to range proofs, rank proofs output each miner's ordinal position rather than their weight vector. This provides miners with their relative performance ranking while concealing the actual weight values that could enable weight copying. Validators prove they have correctly ranked miners according to their incentive mechanism without revealing the underlying weights used to determine those rankings.
+Rank proofs extend range proofs by allowing validators to cryptographically prove and immediately reveal precise ordinal rankings while concealing actual weight values until later. This provides miners with exact performance standings in real-time, while making weight copying difficult since actual consensus values remain hidden during the concealment period. The system preserves the security benefits of commit-reveal while giving miners the continuous feedback needed to maintain competitive performance and avoid deregistration.
+
+<details>
+<summary>View Analysis and Simulation</summary>
+
+The rank proofs approach provides miners with precise ordinal positions while still concealing actual weight values during the concealment period. Through simulation analysis across multiple subnets and strategies, we observe that rank proofs can effectively balance miner transparency with copy resistance. Key findings include:
+
+1. Weight copiers struggle to exploit ranking information alone, as the actual consensus values remain hidden until revelation
+2. Miners receive exact performance standings in real-time, enabling rapid response to performance issues
+3. The approach maintains the security benefits of commit-reveal while addressing the critical need for continuous feedback
+4. Even sophisticated copying strategies like historical rank correlation achieve limited gains without access to actual weights
+
+The simulations demonstrate that rank proofs successfully provide miners with actionable real-time performance data while preserving robust defense against weight copying. By revealing only ordinal positions and concealing weights, the system enables miners to track their standing and avoid deregistration without compromising security.
+
+When combined with range proofs, subnet owners gain flexible options for balancing transparency and security based on their specific needs - using precise rankings when copy resistance is less critical, or bucketed ranges when additional security is required.
+
+#### Subnet 2, Conceal Period of 13 intervals
+
+![SN2 Conceal 13 Rank Proofs](https://github.com/user-attachments/assets/91fa012d-eedf-460e-9c27-6b1c765d8975)
+
+#### Subnet 22, Conceal Period of 1 intervals
+
+![SN22 Conceal 1 Rank Proofs](https://github.com/user-attachments/assets/0d7ff7ce-1355-45b5-a8ae-ae9ec83e041c)
+
+#### Subnet 27, Conceal Period of 3 intervals
+
+![SN27 Conceal 3 Rank Proofs](https://github.com/user-attachments/assets/b3ae411f-cd93-4619-b4d2-7ecdc5d08d24)
+
+</details>
 
 #### Partial revelation
 
@@ -226,3 +289,4 @@ This document is licensed under The Unlicense.
 [Yuma Consensus]: https://docs.bittensor.com/yuma-consensus
 [ImmuneFi]: https://immunefi.com/
 [Proof of Weights simulation repository]: https://github.com/inference-labs-inc/pow-simulations
+[Proof of Weights SDK]: https://github.com/inference-labs-inc/proof-of-weights-sdk
