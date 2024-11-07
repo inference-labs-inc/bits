@@ -3,11 +3,11 @@
 - **BIT Number:** TBD
 - **Title:** Proof of Weights
 - **Author(s):** Inference Labs (https://github.com/inference-labs-inc/)
-- **Discussions-to:** [URL for discussion thread]
+- **Discussions-to:** https://github.com/opentensor/bits/discussions/11
 - **Status:** Draft
 - **Type:** Core, Subtensor
-- **Created:** 2024-09-09
-- **Updated:** 2024-09-09
+- **Created:** 2024-11-07
+- **Updated:** 2024-11-07
 - **Requires:** None
 - **Replaces:** None
 
