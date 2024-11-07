@@ -13,7 +13,7 @@
 
 ## Abstract
 
-This proposal introduces Proof of Weights, a real-time cryptographic solution for Bittensor's ecosystem. It ensures subnet owners' incentivization mechanisms are faithfully executed by validators, safeguarding intended behavior and reward distribution. By leveraging scalable, configurable zero-knowledge proofs, Proof of Weights maintains network bandwidth while rewarding honest validators for their genuine contributions, providing subnet operators with enhanced tools to direct validator behavior.
+This proposal introduces Proof of Weights, a real-time cryptographic solution for Bittensor's ecosystem. It ensures subnet owners' incentivization mechanisms are faithfully executed by validators, safeguarding intended behavior and reward distribution. By leveraging scalable, configurable zero-knowledge proofs, Proof of Weights maintains network bandwidth while rewarding honest validators for their genuine contributions, providing subnet operators with enhanced tools to direct validator behavior. Additionally, Proof of Weights benefits miners by ensuring that feedback on their performance remains immediate and uninterrupted. This allows miners to maintain the current level of insight into their real-time performance, facilitating faster adjustments and sustaining high operational and network efficiency.
 
 ## Motivation
 
