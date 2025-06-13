@@ -7,7 +7,7 @@
 - **Status:** Draft
 - **Type:** Core, Subtensor
 - **Created:** 2025-06-05
-- **Updated:** 2025-06-05
+- **Updated:** 2025-06-13
 - **Requires:** None
 - **Replaces:** None
 
