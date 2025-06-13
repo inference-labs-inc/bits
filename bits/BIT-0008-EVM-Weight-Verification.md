@@ -221,6 +221,21 @@ pub trait HandleTxValidation<E: From<InvalidEvmTransactionError>> {
 
 The potential chain load from this subsidy is minimal. With 256 subnets and a 361-block epoch (~72 minutes), this averages to less than one subsidized transaction per block assuming a `weight_verification_interval` of 1 epoch, an acceptable load for the security gained. A more complex gas sponsorship model can be revisited in a future BIT if necessary.
 
+Chain size impact to archive nodes is modelled as follows. Assuming worst-case conditions:
+
+- 256 subnets
+- All subnets have a `weight_verification_interval` of 1 epoch
+- All subnets have a `weight_verification_contract_address` set
+- All subnets require a large (21kb) zk proof to be submitted to the EVM for verification
+
+In 30 days, this would result in a 3.2GB increase in archive node storage. Over a year, this would result in a 38.4GB increase in archive node storage.
+
+<details><summary>Expand to view simulated results</summary>
+
+![Simulation of chain size impact to archive nodes assuming worst-case conditions](https://github.com/user-attachments/assets/f4313009-9599-40b0-830f-6837b3b1dbbe)
+
+</details>
+
 ## Rationale
 
 To enable the implementation of Proof of Weights ([BIT-0002]), several potential designs were considered. A summary of those considerations is provided below with explanations for why they were not chosen and why the proposed design was chosen.
