@@ -106,7 +106,13 @@ This step occurs when the weights from the Commit Epoch are revealed.
   - It compares the stored hash against a new hash of the just-revealed weights for `V`.
 - **Action 3: Consequence**
   - **Success:** If the hashes match, verification passes. The stored hash is cleared.
-  - **Failure:** If no hash was stored or the hashes do not match, validator `V` fails. Their revealed weights for `E_commit` are ignored (set to zero), and they receive no emissions. The stored hash is cleared.
+  - **Failure:** If no hash was stored or the hashes do not match, validator `V` fails. Their revealed weights for `E_commit` are ignored (set to zero), and as a result they receive no emissions. The stored hash is cleared.
+
+<details><summary>Expand to view simulated results</summary>
+
+![Image](https://github.com/user-attachments/assets/897e10b7-c5c6-4d61-9400-5177d4e1f9fc)
+
+</details>
 
 If `E_commit` was not a Verification Epoch, these steps are skipped.
 
