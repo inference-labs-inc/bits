@@ -78,6 +78,38 @@ To create a robust and gas-efficient bridge between the EVM verifier and the Sub
 
 ### Optimistic Validity Verification
 
+```mermaid
+sequenceDiagram
+    participant S as Subtensor
+    participant V as Validator
+    participant C as Weight Verification Contract
+
+    %% Commit Epoch (E_commit)
+    Note over S: Epoch E_commit, where E_commit % WVI == 0 (Verification Epoch)
+    S->>S: Deterministically select Validator V<br/>using stake-weighted categorical sampling<br/>with latest drand beacon
+    Note over S,V: P(selection[V]) ∝ V.stake
+    V->>C: Call weight_verification_contract_address
+    C->>S: Call storeVerifiedWeightsHash precompile
+    Note over S: Store weightsHash linked to V's hotkey,<br/>netuid, E_commit
+
+    %% Reveal Epoch (E_reveal)
+    Note over S: Epoch E_reveal = E_commit + commit_reveal_weights_interval
+    S->>S: Check if E_commit was Verification Epoch
+    alt Is Verification Epoch
+        S->>S: Identify validator V selected at E_commit
+        S->>S: Lookup stored weightsHash for V at E_commit
+        S->>S: Compare stored hash vs hash of revealed weights
+        alt Hashes match
+            S->>S: Verification passes (success)
+            S->>S: Clear stored weightsHash
+        else Hashes do not match or<br/>no hash stored
+            S->>V: Set V's revealed weights to zero
+            S->>V: No emissions for V
+            S->>S: Clear stored weightsHash
+        end
+    end
+```
+
 This mechanism uses the precompile to create a simple, state-based verification process that integrates cleanly into the existing `epoch()` function. The process is governed by the `weight_verification_interval` (WVI).
 
 The logic unfolds across two key moments: the **Commit Epoch**, when the verification task is assigned and the proof is submitted, and the **Reveal Epoch**, when the committed weights are revealed and verified against the proof.
