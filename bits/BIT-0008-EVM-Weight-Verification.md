@@ -88,7 +88,17 @@ This step occurs during a designated "Verification Epoch".
 
 - **When:** An epoch `E_commit` where `E_commit % WVI == 0`.
 - **Action 1: Validator Selection**
-  - At the start of the epoch, Subtensor deterministically selects one validator `V` using the latest drand beacon. (`drand::random(b"validator_selection").0 % number_of_validators`)
+  - At the start of the epoch, Subtensor deterministically selects one validator `V` using categorical sampling weighted by stake with the latest drand beacon. Each validator's selection probability is proportional to their stake.
+  ```rust
+  // Categorical sampling weighted by stake
+  let total_stake: f64 = S.iter().sum();
+  let random_value = (drand::random(b"validator_selection").0 as f64 / u64::MAX as f64) * total_stake;
+  let mut cumulative = 0.0;
+  for (i, &s) in S.iter().enumerate() {
+      cumulative += s;
+      if random_value < cumulative { return i as u16; }
+  }
+  ```
 - **Action 2: Proof Submission**
   - The selected validator `V` must, within this epoch, call the subnet's `weight_verification_contract_address`.
   - The contract executes its logic and calls the `storeVerifiedWeightsHash` precompile. This stores the `weightsHash` in Subtensor storage, linked to `V`'s hotkey, the `netuid`, and the `E_commit` epoch number.
@@ -125,7 +135,7 @@ This model works regardless of the commit-reveal interval and ensures that valid
 
 A critical design consideration is how to handle gas fees for the `verify` transaction without creating a "tax on honesty" for validators. Two primary models were considered: a "Subnet Owner Pays" model and a "Network Subsidy" model.
 
-The "Subnet Owner Pays" model, while economically ideal, would require a native gas sponsorship feature in the Frontier pallet, a significant and complex undertaking outside the scope of this proposal.
+The "Subnet Owner Pays" model, while economically ideal, would require a native gas sponsorship feature in the [frontier] pallet, a significant and complex undertaking outside the scope of this proposal.
 
 Therefore, this BIT proposes a tightly-scoped **Network Subsidy model**. The core idea is to treat the single verification call per subnet per epoch as a marginal operational cost absorbed by the network's validators, in exchange for the overall security and integrity this mechanism provides.
 
