@@ -88,7 +88,7 @@ This step occurs during a designated "Verification Epoch".
 
 - **When:** An epoch `E_commit` where `E_commit % WVI == 0`.
 - **Action 1: Validator Selection**
-  - At the start of the epoch, Subtensor deterministically selects one validator `V` using categorical sampling weighted by stake with the latest drand beacon. Each validator's selection probability is proportional to their stake.
+  - At the start of the epoch, Subtensor deterministically selects one validator `V` using categorical sampling weighted by stake with the latest drand beacon. Each validator's selection probability is proportional to their stake. The reason for using categorical sampling instead of a purely random selection process is due to the fact that validators who have a higher stake weight have more influence and thus more responsibility to perform correctly within the network.
   ```rust
   // Categorical sampling weighted by stake
   let total_stake: f64 = S.iter().sum();
