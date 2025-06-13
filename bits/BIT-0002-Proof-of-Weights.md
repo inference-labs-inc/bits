@@ -1,14 +1,14 @@
-# BIT-000X: Proof of Weights
+# BIT-0002: Proof of Weights
 
-- **BIT Number:** TBD
+- **BIT Number:** 0002
 - **Title:** Proof of Weights
 - **Author(s):** Inference Labs (https://github.com/inference-labs-inc/)
-- **Discussions-to:** https://github.com/opentensor/bits/discussions/11
+- **Discussions-to:** [`#proof-of-weights`](https://discord.gg/4aHEVxVZMz)
 - **Status:** Draft
 - **Type:** Core, Subtensor
 - **Created:** 2024-11-07
-- **Updated:** 2024-11-07
-- **Requires:** None
+- **Updated:** 2025-06-13
+- **Requires:** BIT-0008
 - **Replaces:** None
 
 ## Abstract
